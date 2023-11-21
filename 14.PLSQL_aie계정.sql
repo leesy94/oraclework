@@ -256,3 +256,205 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE(ENAME || '사원의 급여 등급은 ' || SAL || '입니다.');
 END;
 /
+
+/*
+    CASE 문(SWITCH CASE문과 동일)
+    
+    => CASE 비교대상자
+            WHEN 비교할값 1 THEN 실행내용1
+            WHEN 비교할값 2 THEN 실행내용2
+             ELSE 실행내용4
+        END;
+*/
+
+DECLARE
+    E EMPLOYEE%ROWTYPE;
+    DNAME VARCHAR(30);
+BEGIN
+    SELECT * INTO E FROM EMPLOYEE
+    WHERE EMP_ID = &사번;
+    
+    DNAME := CASE E.DEPT_CODE
+        WHEN 'D1' THEN  '인사관리부'
+        WHEN 'D2' THEN '회계관리부'
+        WHEN 'D3' THEN '마케팅부'
+        WHEN 'D4' THEN '국내영업부'
+        WHEN 'D8' THEN '기술지원부'
+        WHEN 'D9' THEN '총무부'
+        ELSE '해외영업부'
+    END;
+    
+    DBMS_OUTPUT.PUT_LINE(E.EMP_NAME || '는 ' || DNAME || '소속입니다.');
+END;
+/
+
+/*
+    LOOP
+    1. BASIC LOOP문
+    => LOOP
+            반복 실행 구문
+            *  반복문을 빠져 나 갈 수 있는 구문;
+            (   1. IF 조건문 => IF 조건식 THEN EXIT; END IF;
+                2. EXIT => EXIT WHEN 조건식;)
+        END LOOP;
+*/
+DECLARE
+    NUM NUMBER := 1;
+BEGIN
+    LOOP
+        DBMS_OUTPUT.PUT_LINE(NUM);
+        NUM := NUM + NUM;
+        IF NUM > 50
+            THEN EXIT;
+        END IF;
+    END LOOP;
+END;
+/
+
+DECLARE
+    NUM NUMBER := 1;
+BEGIN
+    LOOP
+        DBMS_OUTPUT.PUT_LINE(NUM);
+        NUM := NUM + NUM;
+        EXIT WHEN NUM > 100;
+    END LOOP;
+END;
+/
+
+/*
+    2. FOR LOOP문
+    => 
+    FOR 변수 IN [REVERSE] 초기값..최종값
+    LOOP
+        반복문
+    END LOOP;
+*/
+BEGIN
+    FOR NUM IN 1..16
+    LOOP
+       DBMS_OUTPUT.PUT_LINE(NUM);
+    END LOOP;
+END;
+/
+
+CREATE TABLE TEST(
+    TNO NUMBER PRIMARY KEY,
+    TDATE DATE
+);
+
+CREATE SEQUENCE SEQ_TNO
+INCREMENT BY 2;
+
+BEGIN 
+    FOR NUM IN 1..100
+    LOOP 
+        INSERT INTO TEST VALUES(SEQ_TNO.NEXTVAL, SYSDATE);
+    END LOOP;
+END;
+/
+SELECT * FROM TEST;
+
+/*
+    3. WHILE LOOP문
+    =>
+    WHILE 반복문이 수행 될 조건
+    LOOP
+        반복문
+    END LOOP;
+*/
+
+DECLARE
+    NUM NUMBER := 1;
+BEGIN
+    WHILE NUM < 100
+    LOOP
+        DBMS_OUTPUT.PUT_LINE(NUM);
+        NUM := NUM + NUM;
+    END LOOP;
+END;
+/
+
+/*
+    4. 예외처리부
+        EXCEPTION : 실행 중 발생하는 오류
+        => 
+        EXCEIPTION
+            WHEN 예외명1 THEN 예외처리구문;
+            WEHN 예외명2 THEN 예외처리구문;
+            WHEN OTHERS THEN 예외처리구문;
+        
+        * 시스템예외(오라클에서 미리 정의해둔 예외)
+            - NO_DATA_FOUND : SELECT 결과 없을 때
+            - TOO_MANY_ROWS : SELECT 결과가 여러행 일 때
+            - ZERO_DIVIDE : 0으로 나눴을 때
+            - DUP_VAL_ON_INDEX : UNIQUE 제약조건에 위배 되었을 때
+            등등
+*/
+DECLARE
+    RESULT NUMBER;
+BEGIN
+    RESULT := 10/&숫자;
+    
+EXCEPTION
+    WHEN ZERO_DIVIDE THEN RESULT := 0;
+    DBMS_OUTPUT.PUT_LINE(RESULT);
+END;
+/
+
+BEGIN
+    UPDATE EMPLOYEE SET EMP_ID = '&변경할사번'
+    WHERE EMP_NAME = '김정보';
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN DBMS_OUTPUT.PUT_LINE('이미 존재');
+END;
+/
+DECLARE
+    EID EMPLOYEE.EMP_ID%TYPE;
+    ENAME EMPLOYEE.EMP_NAME%TYPE;
+BEGIN
+    SELECT EMP_ID,EMP_NAME INTO EID,ENAME FROM EMPLOYEE
+    WHERE MANAGER_ID = &사수번호;
+    DBMS_OUTPUT.PUT_LINE(EID ||','|| ENAME);
+    EXCEPTION
+    WHEN TOO_MANY_ROWS THEN DBMS_OUTPUT.PUT_LINE('결과가 너무 많습니다.');
+END;
+/
+
+DECLARE
+    EID EMPLOYEE.EMP_ID%TYPE;
+    SAL EMPLOYEE.SALARY%TYPE;
+BEGIN
+    SELECT EMP_ID, (SALARY+SALARY*NVL(BONUS,0))*12 INTO EID,SAL FROM EMPLOYEE WHERE EMP_ID = &사번;
+    DBMS_OUTPUT.PUT_LINE(EID||'의 연봉은 ' || SAL || '입니다.');
+END;
+/
+
+DECLARE
+    NUM NUMBER := 2;
+BEGIN
+    FOR NUM2 IN 1..9
+    LOOP
+        DBMS_OUTPUT.PUT_LINE(NUM || 'X' || NUM2 || ' = ' ||NUM2 * NUM);
+    END LOOP;
+END;
+/
+
+BEGIN
+    FOR DAN IN 2..9
+    LOOP
+        /*WHILE NUM <= 9
+            LOOP
+                 DBMS_OUTPUT.PUT_LINE(NUM || 'X' || NUM2 || ' = ' ||NUM2 * NUM);
+            END LOOP;*/
+        IF MOD(DAN,2) = 0 
+        THEN
+        FOR SU IN 1..9
+        LOOP
+              DBMS_OUTPUT.PUT_LINE(DAN || 'X' || SU || ' = ' ||DAN * SU);
+        END LOOP;
+        END IF;
+    END LOOP;
+    
+END;
+/

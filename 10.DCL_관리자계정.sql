@@ -59,3 +59,15 @@ GRANT SELECT ON AIE.EMPLOYEE TO sample;
 -- 2.2 SMAPLE계정에게 AIE계정의 DEPARTMENT테이블에 INSERT할 수 있는 권한부여
 GRANT INSERT ON AIE.DEPARTMENT TO sample;
 GRANT SELECT ON AIE.DEPARTMENT TO sample;
+
+//권한 회수
+//REVOKE 회수할 권한 FROM 계정명;
+
+/*
+    ROLE 
+    => 특정 권한들을 하나의 집합으로 모아놓은 것
+    
+    CONNECT : CREATE, SESSION
+    RESOURCE: CREATE 객체,INSERT,UPDATE
+    DBA : 시스템 및 객체관리에 대한 모든 권한을 갖고 있는롤
+*/
